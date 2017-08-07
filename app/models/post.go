@@ -9,12 +9,6 @@ type (
 		Title   string `gorm:"not null" json:"title"`
 		Content string `json:"content"`
 	}
-	// Users struct hold the users details
-	Users struct {
-		gorm.Model
-		Firstname string `gorm:"not null" form:"firstname" json:"firstname"`
-		Lastname  string `gorm:"not null" form:"lastname" json:"lastname"`
-	}
 )
 
 func initDbUser() {
