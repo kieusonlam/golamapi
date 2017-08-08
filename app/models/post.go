@@ -11,10 +11,10 @@ type (
 )
 
 // CreateNewPost use to create new post.
-func CreateNewPost(title string, content string) *Post {
+func CreateNewPost(title *string, content *string) *Post {
 	post := &Post{
-		Title:      title,
-		Content:    content,
+		Title:      *title,
+		Content:    *content,
 		Caterories: "1",
 	}
 	err := db.Insert(post)
