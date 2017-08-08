@@ -1,39 +1,70 @@
 package models
 
 import (
-	"log"
+	"database/sql"
 
 	aah "aahframework.org/aah.v0"
-	"github.com/jinzhu/gorm"
-
-	// _ postgres
-	_ "github.com/jinzhu/gorm/dialects/postgres"
+	"github.com/go-pg/pg"
 )
 
 var (
-	db *gorm.DB
+	db *pg.DB
 )
 
+// Transaction is to handle Db transactions
+type Transaction struct {
+	Transaction *pg.Tx
+}
+
 func initDb(_ *aah.Event) {
-	var err error
+	db := pg.Connect(&pg.Options{
+		User:     "postgres",
+		Password: "postgres",
+		Database: "test",
+	})
 
-	db, err = gorm.Open("postgres", "host=localhost user=postgres dbname=test sslmode=disable password=postgres")
+	err := createSchema(db)
 	if err != nil {
-		log.Fatalf("Got error when connect database, the error is '%v'", err)
+		panic(err)
 	}
-
-	db.DB().SetMaxIdleConns(10)
-	db.DB().SetMaxOpenConns(100)
-
-	db.LogMode(true)
-
-	initDbUser()
 }
 
 func closeDb(_ *aah.Event) {
 	if db != nil {
 		_ = db.Close()
 	}
+}
+
+// GetTx returns the DB transaction.
+func GetTx() *Transaction {
+	tx, err := db.Begin()
+	if err != nil {
+		panic(err)
+		return nil
+	}
+	return &Transaction{Transaction: tx}
+}
+
+// CommitOrRollback commits or rollback if error.
+func (t *Transaction) CommitOrRollback() {
+	if t.Transaction != nil {
+		if err := t.Transaction.Commit(); err != nil && err != sql.ErrTxDone {
+			if err = t.Transaction.Rollback(); err != nil && err != sql.ErrTxDone {
+				panic(err)
+			}
+		}
+		t.Transaction = nil
+	}
+}
+
+func createSchema(db *pg.DB) error {
+	for _, model := range []interface{}{&Post{}} {
+		err := db.CreateTable(model, nil)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func init() {
