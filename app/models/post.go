@@ -1,5 +1,9 @@
 package models
 
+import (
+	"github.com/go-pg/pg"
+)
+
 type (
 	// Post struct hold the post details
 	Post struct {
@@ -10,8 +14,8 @@ type (
 	}
 )
 
-// CreateNewPost use to create new post.
-func CreateNewPost(title *string, content *string) *Post {
+// CreatePost use to create new post.
+func CreatePost(title *string, content *string) *Post {
 	post := &Post{
 		Title:      *title,
 		Content:    *content,
@@ -24,12 +28,26 @@ func CreateNewPost(title *string, content *string) *Post {
 	return post
 }
 
-// GetPostsData use to get all posts.
-func GetPostsData() []Post {
+// GetPosts use to get all posts.
+func GetPosts() []Post {
 	var posts []Post
 	err := db.Model(&posts).Select()
 	if err != nil {
 		panic(err)
 	}
 	return posts
+}
+
+// GetPost use to get single post.
+func GetPost(id int) interface{} {
+	var post Post
+	err := db.Model(&post).Where("id = ?", id).Select()
+	if err == pg.ErrNoRows {
+		return map[string]interface{}{
+			"error": "Post not found",
+		}
+	} else if err != nil {
+		panic(err)
+	}
+	return post
 }

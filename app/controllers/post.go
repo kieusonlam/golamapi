@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"strconv"
 
 	"golamapi/app/models"
 
@@ -29,7 +30,7 @@ func (a *PostController) CreatePost() {
 	title := &reqValues.Title
 	content := &reqValues.Content
 
-	post := models.CreateNewPost(title, content)
+	post := models.CreatePost(title, content)
 
 	a.Reply().Ok().JSON(aah.Data{
 		"data": post,
@@ -38,9 +39,19 @@ func (a *PostController) CreatePost() {
 
 // GetPosts get all post data
 func (a *PostController) GetPosts() {
-	posts := models.GetPostsData()
+	posts := models.GetPosts()
 
 	a.Reply().Ok().JSON(aah.Data{
 		"data": posts,
+	})
+}
+
+// GetPost get single post
+func (a *PostController) GetPost() {
+	id, _ := strconv.Atoi(a.Req.PathValue("id"))
+	post := models.GetPost(id)
+
+	a.Reply().Ok().JSON(aah.Data{
+		"data": post,
 	})
 }

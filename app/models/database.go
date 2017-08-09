@@ -23,10 +23,10 @@ func initDb(_ *aah.Event) {
 		Database: "test",
 	})
 
-	err := createSchema(db)
-	if err != nil {
-		panic(err)
-	}
+	// err := createSchema(db)
+	// if err != nil {
+	// 	panic(err)
+	// }
 }
 
 func closeDb(_ *aah.Event) {
