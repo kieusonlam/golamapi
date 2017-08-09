@@ -17,7 +17,7 @@ type Transaction struct {
 }
 
 func initDb(_ *aah.Event) {
-	db := pg.Connect(&pg.Options{
+	db = pg.Connect(&pg.Options{
 		User:     "postgres",
 		Password: "postgres",
 		Database: "test",
