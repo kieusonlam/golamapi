@@ -1,16 +1,14 @@
 package models
 
-import (
-	"github.com/go-pg/pg"
-)
+import "aahframework.org/log.v0"
 
 type (
 	// Post struct hold the post details
 	Post struct {
-		ID         int
-		Title      string
-		Content    string
-		Caterories string
+		ID         int    `json:"id"`
+		Title      string `json:"title"`
+		Content    string `json:"content"`
+		Caterories string `json:"categories"`
 	}
 )
 
@@ -23,7 +21,7 @@ func CreatePost(title *string, content *string) *Post {
 	}
 	err := db.Insert(post)
 	if err != nil {
-		panic(err)
+		log.Error(err)
 	}
 	return post
 }
@@ -33,21 +31,17 @@ func GetPosts() []Post {
 	var posts []Post
 	err := db.Model(&posts).Select()
 	if err != nil {
-		panic(err)
+		log.Error(err)
 	}
 	return posts
 }
 
 // GetPost use to get single post.
-func GetPost(id int) interface{} {
+func GetPost(id int) Post {
 	var post Post
 	err := db.Model(&post).Where("id = ?", id).Select()
-	if err == pg.ErrNoRows {
-		return map[string]interface{}{
-			"error": "Post not found",
-		}
-	} else if err != nil {
-		panic(err)
+	if err != nil {
+		log.Error(err)
 	}
 	return post
 }
