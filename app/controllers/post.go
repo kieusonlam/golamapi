@@ -30,7 +30,7 @@ func (a *PostController) CreatePost() {
 	title := &reqValues.Title
 	content := &reqValues.Content
 
-	post := models.CreatePost(title, content)
+	post := models.CreatePost(*title, *content)
 
 	a.Reply().Ok().JSON(aah.Data{
 		"data": post,
@@ -57,5 +57,41 @@ func (a *PostController) GetPost() {
 	}
 	a.Reply().NotFound().JSON(aah.Data{
 		"message": "Post not found!",
+	})
+}
+
+// UpdatePost update post in database and return data,
+func (a *PostController) UpdatePost() {
+	var reqValues struct {
+		Title   string `json:"title"`
+		Content string `json:"content"`
+	}
+	if err := json.Unmarshal(a.Req.Payload, &reqValues); err != nil {
+		a.Reply().BadRequest().JSON(aah.Data{
+			"message": "bad request",
+		})
+		return
+	}
+
+	id, _ := strconv.Atoi(a.Req.PathValue("id"))
+
+	title := &reqValues.Title
+	content := &reqValues.Content
+
+	post := models.UpdatePost(id, *title, *content)
+
+	a.Reply().Ok().JSON(aah.Data{
+		"data": post,
+	})
+}
+
+// DeletePost create new post in database and return data,
+func (a *PostController) DeletePost() {
+	id, _ := strconv.Atoi(a.Req.PathValue("id"))
+
+	post := models.DeletePost(id)
+
+	a.Reply().Ok().JSON(aah.Data{
+		"data": post,
 	})
 }
