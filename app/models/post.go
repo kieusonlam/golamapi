@@ -10,11 +10,12 @@ import (
 type (
 	// Post struct hold the post details
 	Post struct {
-		ID        int       `json:"id"`
-		Title     string    `json:"title"`
-		Content   string    `json:"content"`
-		CreatedAt time.Time `json:"create_at"`
-		UpdatedAt time.Time `json:"updated_at"`
+		ID         int            `json:"id"`
+		Title      string         `json:"title"`
+		Content    string         `json:"content"`
+		Categories []PostCategory `json:"categories"`
+		CreatedAt  time.Time      `json:"created_at"`
+		UpdatedAt  time.Time      `json:"updated_at"`
 	}
 )
 
@@ -31,12 +32,7 @@ func (b *Post) BeforeInsert(db orm.DB) error {
 
 // BeforeUpdate add current time to create_at
 func (b *Post) BeforeUpdate(db orm.DB) error {
-	if b.CreatedAt.IsZero() {
-		b.CreatedAt = time.Now()
-	}
-	if b.UpdatedAt.IsZero() {
-		b.UpdatedAt = time.Now()
-	}
+	b.UpdatedAt = time.Now()
 	return nil
 }
 
@@ -79,11 +75,12 @@ func GetPost(id int) interface{} {
 
 // UpdatePost use to create new post.
 func UpdatePost(id int, title string, content string) interface{} {
-	err := db.Update(&Post{
+	post := &Post{
 		ID:      id,
 		Title:   title,
 		Content: content,
-	})
+	}
+	_, err := db.Model(post).Column("title").Column("content").Column("updated_at").Returning("*").Update()
 	if err != nil {
 		panic(err)
 	}
