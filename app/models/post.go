@@ -10,12 +10,12 @@ import (
 type (
 	// Post struct hold the post details
 	Post struct {
-		ID         int            `json:"id"`
-		Title      string         `json:"title"`
-		Content    string         `json:"content"`
-		Categories []PostCategory `json:"categories"`
-		CreatedAt  time.Time      `json:"created_at"`
-		UpdatedAt  time.Time      `json:"updated_at"`
+		ID         int        `json:"id"`
+		Title      string     `json:"title"`
+		Content    string     `json:"content"`
+		Categories []Category `json:"categories" pg:"many_to_many:posts_categories,fk:Post,joinFK:Category"`
+		CreatedAt  time.Time  `json:"created_at"`
+		UpdatedAt  time.Time  `json:"updated_at"`
 	}
 )
 
@@ -52,7 +52,7 @@ func CreatePost(title string, content string) *Post {
 // GetPosts use to get all posts.
 func GetPosts() []Post {
 	var posts []Post
-	err := db.Model(&posts).Select()
+	err := db.Model(&posts).Column("post.*", "categories").Select()
 	if err != nil {
 		log.Error(err)
 	}
