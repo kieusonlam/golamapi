@@ -2,6 +2,8 @@ package models
 
 import (
 	"database/sql"
+	"log"
+	"time"
 
 	aah "aahframework.org/aah.v0"
 	"github.com/go-pg/pg"
@@ -21,6 +23,15 @@ func initDb(_ *aah.Event) {
 		User:     "postgres",
 		Password: "postgres",
 		Database: "test",
+	})
+
+	db.OnQueryProcessed(func(event *pg.QueryProcessedEvent) {
+		query, err := event.FormattedQuery()
+		if err != nil {
+			panic(err)
+		}
+
+		log.Printf("%s %s", time.Since(event.StartTime), query)
 	})
 
 	// err := createSchema(db)

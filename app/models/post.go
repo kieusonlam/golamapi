@@ -3,7 +3,7 @@ package models
 import (
 	"time"
 
-	"github.com/go-pg/pg"
+	"aahframework.org/log.v0"
 	"github.com/go-pg/pg/orm"
 )
 
@@ -44,7 +44,7 @@ func CreatePost(title string, content string) *Post {
 	}
 	err := db.Insert(post)
 	if err != nil {
-		panic(err)
+		log.Error(err)
 	}
 	return post
 }
@@ -54,21 +54,17 @@ func GetPosts() []Post {
 	var posts []Post
 	err := db.Model(&posts).Select()
 	if err != nil {
-		panic(err)
+		log.Error(err)
 	}
 	return posts
 }
 
 // GetPost use to get single post.
-func GetPost(id int) interface{} {
+func GetPost(id int) Post {
 	var post Post
 	err := db.Model(&post).Where("id = ?", id).Select()
-	if err == pg.ErrNoRows {
-		return map[string]interface{}{
-			"error": "Post not found",
-		}
-	} else if err != nil {
-		panic(err)
+	if err != nil {
+		log.Error(err)
 	}
 	return post
 }
@@ -82,7 +78,7 @@ func UpdatePost(id int, title string, content string) interface{} {
 	}
 	_, err := db.Model(post).Column("title").Column("content").Column("updated_at").Returning("*").Update()
 	if err != nil {
-		panic(err)
+		log.Error(err)
 	}
 	return GetPost(id)
 }
@@ -93,7 +89,7 @@ func DeletePost(id int) interface{} {
 		ID: id,
 	})
 	if err != nil {
-		panic(err)
+		log.Error(err)
 	}
 	return id
 }
