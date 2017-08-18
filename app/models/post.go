@@ -13,7 +13,7 @@ type (
 		ID         int        `json:"id"`
 		Title      string     `json:"title"`
 		Content    string     `json:"content"`
-		Categories []Category `json:"categories" pg:"many_to_many:posts_categories,fk:Post,joinFK:Category"`
+		Categories []Category `json:"categories" pg:",many_to_many:posts_categories,fk:Post,joinFK:Category"`
 		CreatedAt  time.Time  `json:"created_at"`
 		UpdatedAt  time.Time  `json:"updated_at"`
 	}
@@ -62,7 +62,7 @@ func GetPosts() []Post {
 // GetPost use to get single post.
 func GetPost(id int) Post {
 	var post Post
-	err := db.Model(&post).Where("id = ?", id).Select()
+	err := db.Model(&post).Column("post.*", "categories").Where("id = ?", id).Select()
 	if err != nil {
 		log.Error(err)
 	}

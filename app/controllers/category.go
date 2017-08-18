@@ -56,7 +56,7 @@ func (a *CategoryController) GetCategory() {
 		})
 	}
 	a.Reply().NotFound().JSON(aah.Data{
-		"message": "Category not found!",
+		"data": cat,
 	})
 }
 

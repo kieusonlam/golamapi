@@ -56,7 +56,7 @@ func (a *PostController) GetPost() {
 		})
 	}
 	a.Reply().NotFound().JSON(aah.Data{
-		"message": "Post not found!",
+		"data": post,
 	})
 }
 

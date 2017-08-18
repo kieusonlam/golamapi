@@ -8,7 +8,7 @@ type (
 		ID          int    `json:"id"`
 		Name        string `json:"name"`
 		Description string `json:"description"`
-		Posts       []Post `json:"posts" pg:"many_to_many:posts_categories,,fk:Category,joinFK:Post"`
+		Posts       []Post `json:"posts" pg:",many_to_many:posts_categories,,fk:Category,joinFK:Post"`
 	}
 )
 
@@ -38,7 +38,7 @@ func GetCategories() []Category {
 // GetCategory use to get single post.
 func GetCategory(id int) Category {
 	var cat Category
-	err := db.Model(&cat).Where("id = ?", id).Select()
+	err := db.Model(&cat).Column("category.*", "posts").Where("id = ?", id).Select()
 	if err != nil {
 		log.Error(err)
 	}
