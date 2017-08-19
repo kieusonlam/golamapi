@@ -2,18 +2,16 @@ package models
 
 import "aahframework.org/log.v0"
 
-type (
-	// PostsCategories Post Category relation
-	PostsCategories struct {
-		ID         int `json:"id"`
-		PostID     int `json:"post_id"`
-		CategoryID int `json:"category_id"`
-	}
-)
+// PostCategory Post Category relation
+type PostCategory struct {
+	ID         int `json:"id"`
+	PostID     int `json:"post_id"`
+	CategoryID int `json:"category_id"`
+}
 
 // PostCatRelation add relation between post and category
-func PostCatRelation(postid int, catid int) *PostsCategories {
-	postcat := &PostsCategories{
+func PostCatRelation(postid int, catid int) *PostCategory {
+	postcat := &PostCategory{
 		PostID:     postid,
 		CategoryID: catid,
 	}
@@ -25,8 +23,8 @@ func PostCatRelation(postid int, catid int) *PostsCategories {
 }
 
 // GetPostCatRelations use to get all posts.
-func GetPostCatRelations() []PostsCategories {
-	var postcatrels []PostsCategories
+func GetPostCatRelations() []PostCategory {
+	var postcatrels []PostCategory
 	err := db.Model(&postcatrels).Select()
 	if err != nil {
 		log.Error(err)

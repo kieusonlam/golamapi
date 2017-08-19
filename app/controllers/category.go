@@ -52,7 +52,7 @@ func (a *CategoryController) GetCategory() {
 	cat := models.GetCategory(id)
 	if cat.ID != 0 {
 		a.Reply().Ok().JSON(aah.Data{
-			"data": cat,
+			"message": "Category is not found!",
 		})
 	}
 	a.Reply().NotFound().JSON(aah.Data{

@@ -2,15 +2,13 @@ package models
 
 import "aahframework.org/log.v0"
 
-type (
-	// Category hold post category details
-	Category struct {
-		ID          int    `json:"id"`
-		Name        string `json:"name"`
-		Description string `json:"description"`
-		Posts       []Post `json:"posts" pg:",many_to_many:posts_categories,,fk:Category,joinFK:Post"`
-	}
-)
+// Category hold post category details
+type Category struct {
+	ID          int    `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Posts       []Post `json:"posts"  pg:"many2many:post_categories"`
+}
 
 // CreateCategory use to create new post.
 func CreateCategory(name string, description string) *Category {
@@ -28,7 +26,7 @@ func CreateCategory(name string, description string) *Category {
 // GetCategories use to get all posts.
 func GetCategories() []Category {
 	var categories []Category
-	err := db.Model(&categories).Column("category.*", "posts").Select()
+	err := db.Model(&categories).Column("category.*", "Posts").Select()
 	if err != nil {
 		log.Error(err)
 	}
@@ -38,7 +36,7 @@ func GetCategories() []Category {
 // GetCategory use to get single post.
 func GetCategory(id int) Category {
 	var cat Category
-	err := db.Model(&cat).Column("category.*", "posts").Where("id = ?", id).Select()
+	err := db.Model(&cat).Column("category.*", "Posts").Where("id = ?", id).Select()
 	if err != nil {
 		log.Error(err)
 	}

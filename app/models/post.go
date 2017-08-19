@@ -7,17 +7,15 @@ import (
 	"github.com/go-pg/pg/orm"
 )
 
-type (
-	// Post struct hold the post details
-	Post struct {
-		ID         int        `json:"id"`
-		Title      string     `json:"title"`
-		Content    string     `json:"content"`
-		Categories []Category `json:"categories" pg:",many_to_many:posts_categories,fk:Post,joinFK:Category"`
-		CreatedAt  time.Time  `json:"created_at"`
-		UpdatedAt  time.Time  `json:"updated_at"`
-	}
-)
+// Post struct hold the post details
+type Post struct {
+	ID         int        `json:"id"`
+	Title      string     `json:"title"`
+	Content    string     `json:"content"`
+	Categories []Category `json:"categories" pg:"many2many:post_categories"`
+	CreatedAt  time.Time  `json:"created_at"`
+	UpdatedAt  time.Time  `json:"updated_at"`
+}
 
 // BeforeInsert add current time to create_at
 func (b *Post) BeforeInsert(db orm.DB) error {
@@ -52,7 +50,7 @@ func CreatePost(title string, content string) *Post {
 // GetPosts use to get all posts.
 func GetPosts() []Post {
 	var posts []Post
-	err := db.Model(&posts).Column("post.*", "categories").Select()
+	err := db.Model(&posts).Column("post.*", "Categories").Select()
 	if err != nil {
 		log.Error(err)
 	}
@@ -62,7 +60,7 @@ func GetPosts() []Post {
 // GetPost use to get single post.
 func GetPost(id int) Post {
 	var post Post
-	err := db.Model(&post).Column("post.*", "categories").Where("id = ?", id).Select()
+	err := db.Model(&post).Column("post.*", "Categories").Where("id = ?", id).Select()
 	if err != nil {
 		log.Error(err)
 	}

@@ -69,7 +69,7 @@ func (t *Transaction) CommitOrRollback() {
 }
 
 func createSchema(db *pg.DB) error {
-	for _, model := range []interface{}{&Post{}, &Category{}, &PostsCategories{}} {
+	for _, model := range []interface{}{&Post{}, &Category{}, &PostCategory{}} {
 		err := db.CreateTable(model, nil)
 		if err != nil {
 			return err

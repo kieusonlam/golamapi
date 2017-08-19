@@ -52,7 +52,7 @@ func (a *PostController) GetPost() {
 	post := models.GetPost(id)
 	if post.ID != 0 {
 		a.Reply().Ok().JSON(aah.Data{
-			"data": post,
+			"message": "Post is not found!",
 		})
 	}
 	a.Reply().NotFound().JSON(aah.Data{
