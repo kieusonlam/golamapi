@@ -31,3 +31,14 @@ func GetPostCatRelations() []PostCategory {
 	}
 	return postcatrels
 }
+
+// DelPostCatRel remove relation record
+func DelPostCatRel(id int) interface{} {
+	err := db.Delete(&PostCategory{
+		ID: id,
+	})
+	if err != nil {
+		log.Error(err)
+	}
+	return id
+}

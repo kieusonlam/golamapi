@@ -3,6 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"golamapi/app/models"
+	"strconv"
 
 	aah "aahframework.org/aah.v0"
 )
@@ -41,5 +42,16 @@ func (a *PostCatRelationController) GetPostCatRels() {
 
 	a.Reply().Ok().JSON(aah.Data{
 		"data": postcats,
+	})
+}
+
+// DeletePostCatRel create new post in database and return data,
+func (a *CategoryController) DeletePostCatRel() {
+	id, _ := strconv.Atoi(a.Req.PathValue("id"))
+
+	post := models.DelPostCatRel(id)
+
+	a.Reply().Ok().JSON(aah.Data{
+		"data": post,
 	})
 }
