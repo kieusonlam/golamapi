@@ -16,8 +16,8 @@ type PostCatRelationController struct {
 // PostPostCatRelation create new post in database and return data,
 func (a *PostCatRelationController) PostPostCatRelation() {
 	var reqValues struct {
-		PostID    int `json:"post_id"`
-		PostCatID int `json:"postcat_id"`
+		PostID     int `json:"post_id"`
+		CategoryID int `json:"category_id"`
 	}
 	if err := json.Unmarshal(a.Req.Payload, &reqValues); err != nil {
 		a.Reply().BadRequest().JSON(aah.Data{
@@ -27,9 +27,9 @@ func (a *PostCatRelationController) PostPostCatRelation() {
 	}
 
 	postid := &reqValues.PostID
-	postcatid := &reqValues.PostCatID
+	catid := &reqValues.CategoryID
 
-	postcat := models.PostCatRelation(*postid, *postcatid)
+	postcat := models.PostCatRelation(*postid, *catid)
 
 	a.Reply().Ok().JSON(aah.Data{
 		"data": postcat,
