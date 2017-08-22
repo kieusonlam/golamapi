@@ -37,7 +37,7 @@ func (a *CategoryController) CreateCategory() {
 	})
 }
 
-// PostCategories get all category data
+// GetCategories get all category data
 func (a *CategoryController) GetCategories() {
 	cats := models.GetCategories()
 
@@ -50,10 +50,11 @@ func (a *CategoryController) GetCategories() {
 func (a *CategoryController) GetCategory() {
 	id, _ := strconv.Atoi(a.Req.PathValue("id"))
 	cat := models.GetCategory(id)
-	if cat.ID != 0 {
+	if cat.ID == 0 {
 		a.Reply().Ok().JSON(aah.Data{
 			"message": "Category is not found!",
 		})
+		return
 	}
 	a.Reply().NotFound().JSON(aah.Data{
 		"data": cat,

@@ -50,10 +50,11 @@ func (a *PostController) GetPosts() {
 func (a *PostController) GetPost() {
 	id, _ := strconv.Atoi(a.Req.PathValue("id"))
 	post := models.GetPost(id)
-	if post.ID != 0 {
+	if post.ID == 0 {
 		a.Reply().Ok().JSON(aah.Data{
 			"message": "Post is not found!",
 		})
+		return
 	}
 	a.Reply().NotFound().JSON(aah.Data{
 		"data": post,
