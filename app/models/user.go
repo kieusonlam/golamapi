@@ -4,16 +4,16 @@
 
 package models
 
+import "aahframework.org/log.v0"
+
 // This is for demo purpose, set of users
 // Typically you will be using Database, API calls, LDAP, etc to get the Authentication
 // Information.
 
-// Key is email and value is User
-var users map[string]*User
-
 type (
 	// User struct hold the user details
 	User struct {
+		ID          int      `json:"id"`
 		FirstName   string   `json:"first_name"`
 		LastName    string   `json:"last_name"`
 		Email       string   `json:"email"`
@@ -25,55 +25,49 @@ type (
 	}
 )
 
-// FindUserByEmail returns the user information for given email address.
-func FindUserByEmail(email string) *User {
-	if u, found := users[email]; found {
-		uf := *u
-		return &uf
+// FindUserByEmail use to get single post.
+func FindUserByEmail(email string) User {
+	var user User
+	err := db.Model(&user).Where("email = ?", email).Select()
+	if err != nil {
+		log.Error(err)
 	}
-	return nil
+	return user
 }
 
-func init() {
-	/*
-		   Creating User Information
-			 Learn about permission: http://docs.aahframework.org/security-permissions.html
-	*/
-	users = make(map[string]*User)
-
-	users["user1@example.com"] = &User{
+// CreateTestUsers use to create new post.
+func CreateTestUsers() []User {
+	users := []User{{
 		FirstName:   "East",
 		LastName:    "Corner",
 		Password:    []byte("$2y$10$2A4GsJ6SmLAMvDe8XmTam.MSkKojdobBVJfIU7GiyoM.lWt.XV3H6"), // welcome123
 		Email:       "user1@example.com",
 		Roles:       []string{"employee", "manager"},
 		Permissions: []string{"user:read,edit:reportee"},
-	}
-
-	users["user2@example.com"] = &User{
+	}, {
 		FirstName:   "West",
 		LastName:    "Corner",
 		Password:    []byte("$2y$10$2A4GsJ6SmLAMvDe8XmTam.MSkKojdobBVJfIU7GiyoM.lWt.XV3H6"), // welcome123
 		Email:       "user2@example.com",
 		Roles:       []string{"employee"},
 		Permissions: []string{},
-	}
-
-	users["user3@example.com"] = &User{
+	}, {
 		FirstName: "South",
 		LastName:  "Corner",
 		Password:  []byte("$2y$10$2A4GsJ6SmLAMvDe8XmTam.MSkKojdobBVJfIU7GiyoM.lWt.XV3H6"), // welcome123
 		Email:     "user3@example.com",
 		IsLocked:  true,
-	}
-
-	users["admin@example.com"] = &User{
+	}, {
 		FirstName:   "Admin",
 		LastName:    "Corner",
 		Password:    []byte("$2y$10$2A4GsJ6SmLAMvDe8XmTam.MSkKojdobBVJfIU7GiyoM.lWt.XV3H6"), // welcome123
 		Email:       "admin@example.com",
 		Roles:       []string{"employee", "manager", "admin"},
 		Permissions: []string{"user:read,edit,delete:reportee"},
+	}}
+	err := db.Insert(&users)
+	if err != nil {
+		log.Error(err)
 	}
-
+	return users
 }

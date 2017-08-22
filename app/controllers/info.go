@@ -36,7 +36,7 @@ func (i *InfoController) ReporteeInfo() {
 	email := i.Req.PathValue("email")
 	userInfo := models.FindUserByEmail(email)
 
-	if userInfo == nil {
+	if userInfo.ID == 0 {
 		i.Reply().NotFound().JSON(aah.Data{
 			"message": "repotee not found",
 		})

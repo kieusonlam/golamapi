@@ -54,7 +54,7 @@ func (a *AppController) Token() {
 
 	// get the user details by username
 	user := models.FindUserByEmail(username)
-	if user == nil || user.IsExpried || user.IsLocked {
+	if user.ID == 0 || user.IsExpried || user.IsLocked {
 		a.Reply().Unauthorized().JSON(aah.Data{
 			"message": "invalid credentials",
 		})
