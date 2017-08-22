@@ -7,7 +7,7 @@ type Category struct {
 	ID          int    `json:"id"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
-	Posts       []Post `json:"posts"  pg:"many2many:post_categories"`
+	Posts       []Post `json:"posts" pg:"many2many:post_categories"`
 }
 
 // CreateCategory use to create new post.
