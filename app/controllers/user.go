@@ -19,3 +19,13 @@ func (a *UserController) CreateTestUsers() {
 		"data": users,
 	})
 }
+
+// GetUser create new post in database and return data,
+func (a *UserController) GetUser() {
+	email := a.Req.PathValue("email")
+	user := models.FindUserByEmail(email)
+
+	a.Reply().Ok().JSON(aah.Data{
+		"data": user,
+	})
+}
