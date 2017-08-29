@@ -1,4 +1,4 @@
-FROM golang:1.8
+FROM golang:latest
 
 WORKDIR /go/src/golamapi
 
