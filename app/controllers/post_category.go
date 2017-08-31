@@ -8,13 +8,13 @@ import (
 	aah "aahframework.org/aah.v0"
 )
 
-// PostCatgoryController is to demostrate the REST API endpoints for Post.
-type PostCatgoryController struct {
+// PostCategoryController is to demostrate the REST API endpoints for Post.
+type PostCategoryController struct {
 	AppController
 }
 
 // PostPostCatRelation create new post in database and return data,
-func (a *PostCatgoryController) PostPostCatRelation() {
+func (a *PostCategoryController) PostPostCatRelation() {
 	var reqValues struct {
 		PostID     int `json:"post_id"`
 		CategoryID int `json:"category_id"`
@@ -37,7 +37,7 @@ func (a *PostCatgoryController) PostPostCatRelation() {
 }
 
 // GetPostCatRels get single post
-func (a *PostCatgoryController) GetPostCatRels() {
+func (a *PostCategoryController) GetPostCatRels() {
 	postcats := models.GetPostCatRelations()
 
 	a.Reply().Ok().JSON(aah.Data{
@@ -46,7 +46,7 @@ func (a *PostCatgoryController) GetPostCatRels() {
 }
 
 // DeletePostCatRel create new post in database and return data,
-func (a *PostCatgoryController) DeletePostCatRel() {
+func (a *PostCategoryController) DeletePostCatRel() {
 	id, _ := strconv.Atoi(a.Req.PathValue("id"))
 
 	post := models.DelPostCatRel(id)
