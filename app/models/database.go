@@ -7,6 +7,7 @@ import (
 
 	aah "aahframework.org/aah.v0"
 	"github.com/go-pg/pg"
+	"github.com/go-pg/pg/orm"
 )
 
 var (
@@ -34,10 +35,10 @@ func initDb(_ *aah.Event) {
 		log.Printf("%s %s", time.Since(event.StartTime), query)
 	})
 
-	// err := createSchema(db)
-	// if err != nil {
-	// 	panic(err)
-	// }
+	err := createSchema(db)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func closeDb(_ *aah.Event) {
@@ -70,7 +71,9 @@ func (t *Transaction) CommitOrRollback() {
 
 func createSchema(db *pg.DB) error {
 	for _, model := range []interface{}{&Post{}, &Category{}, &PostCategory{}, &User{}} {
-		err := db.CreateTable(model, nil)
+		err := db.CreateTable(model, &orm.CreateTableOptions{
+			IfNotExists: true,
+		})
 		if err != nil {
 			return err
 		}
