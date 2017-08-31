@@ -46,7 +46,7 @@ func (a *PostCatgoryController) GetPostCatRels() {
 }
 
 // DeletePostCatRel create new post in database and return data,
-func (a *CategoryController) DeletePostCatRel() {
+func (a *PostCatgoryController) DeletePostCatRel() {
 	id, _ := strconv.Atoi(a.Req.PathValue("id"))
 
 	post := models.DelPostCatRel(id)
