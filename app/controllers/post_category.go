@@ -1,11 +1,10 @@
 package controllers
 
 import (
-	"encoding/json"
 	"golamapi/app/models"
-	"strconv"
 
-	aah "aahframework.org/aah.v0"
+	"aahframework.org/aah.v0"
+	"aahframework.org/log.v0"
 )
 
 // PostCategoryController is to demostrate the REST API endpoints for Post.
@@ -14,44 +13,40 @@ type PostCategoryController struct {
 }
 
 // PostPostCatRelation create new post in database and return data,
-func (a *PostCategoryController) PostPostCatRelation() {
-	var reqValues struct {
-		PostID     int `json:"post_id"`
-		CategoryID int `json:"category_id"`
-	}
-	if err := json.Unmarshal(a.Req.Payload, &reqValues); err != nil {
-		a.Reply().BadRequest().JSON(aah.Data{
-			"message": "bad request",
+func (p *PostCategoryController) PostPostCatRelation(postCategory *models.PostCategory) {
+	postcat, err := models.CreatePostCatRelation(postCategory)
+	if err != nil {
+		log.Error(err)
+		p.Reply().InternalServerError().JSON(aah.Data{
+			"message": "Error occurred while creating post and category",
 		})
 		return
 	}
 
-	postid := &reqValues.PostID
-	catid := &reqValues.CategoryID
-
-	postcat := models.PostCatRelation(*postid, *catid)
-
-	a.Reply().Ok().JSON(aah.Data{
+	p.Reply().Ok().JSON(aah.Data{
 		"data": postcat,
 	})
 }
 
 // GetPostCatRels get single post
-func (a *PostCategoryController) GetPostCatRels() {
+func (p *PostCategoryController) GetPostCatRels() {
 	postcats := models.GetPostCatRelations()
 
-	a.Reply().Ok().JSON(aah.Data{
+	p.Reply().Ok().JSON(aah.Data{
 		"data": postcats,
 	})
 }
 
 // DeletePostCatRel create new post in database and return data,
-func (a *PostCategoryController) DeletePostCatRel() {
-	id, _ := strconv.Atoi(a.Req.PathValue("id"))
+func (p *PostCategoryController) DeletePostCatRel(id int) {
+	_, err := models.DelPostCatRel(id)
+	if err != nil {
+		log.Error(err)
+		p.Reply().InternalServerError().JSON(aah.Data{
+			"message": "Error occurred while deleting relation of post and category",
+		})
+		return
+	}
 
-	post := models.DelPostCatRel(id)
-
-	a.Reply().Ok().JSON(aah.Data{
-		"data": post,
-	})
+	p.Reply().NoContent()
 }

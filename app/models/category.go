@@ -11,16 +11,9 @@ type Category struct {
 }
 
 // CreateCategory use to create new post.
-func CreateCategory(name string, description string) *Category {
-	cat := &Category{
-		Name:        name,
-		Description: description,
-	}
+func CreateCategory(cat *Category) (*Category, error) {
 	err := db.Insert(cat)
-	if err != nil {
-		log.Error(err)
-	}
-	return cat
+	return cat, err
 }
 
 // GetCategories use to get all posts.
@@ -34,35 +27,31 @@ func GetCategories() []Category {
 }
 
 // GetCategory use to get single post.
-func GetCategory(id int) Category {
+func GetCategory(id int) *Category {
 	var cat Category
 	err := db.Model(&cat).Column("category.*", "Posts").Where("id = ?", id).Select()
 	if err != nil {
 		log.Error(err)
 	}
-	return cat
+	return &cat
 }
 
 // UpdateCategory use to create new post.
-func UpdateCategory(id int, name string, description string) interface{} {
-	err := db.Update(&Category{
-		ID:          id,
-		Name:        name,
-		Description: description,
-	})
+func UpdateCategory(cat *Category) (*Category, error) {
+	err := db.Update(cat)
 	if err != nil {
-		log.Error(err)
+		return nil, err
 	}
-	return GetCategory(id)
+	return GetCategory(cat.ID), nil
 }
 
 // DeleteCategory use to create new post.
-func DeleteCategory(id int) interface{} {
+func DeleteCategory(id int) (int, error) {
 	err := db.Delete(&Category{
 		ID: id,
 	})
 	if err != nil {
-		log.Error(err)
+		return 0, err
 	}
-	return id
+	return id, nil
 }

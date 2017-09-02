@@ -35,16 +35,9 @@ func (b *Post) BeforeUpdate(db orm.DB) error {
 }
 
 // CreatePost use to create new post.
-func CreatePost(title string, content string) *Post {
-	post := &Post{
-		Title:   title,
-		Content: content,
-	}
+func CreatePost(post *Post) (*Post, error) {
 	err := db.Insert(post)
-	if err != nil {
-		log.Error(err)
-	}
-	return post
+	return post, err
 }
 
 // GetPosts use to get all posts.
@@ -58,36 +51,31 @@ func GetPosts() []Post {
 }
 
 // GetPost use to get single post.
-func GetPost(id int) Post {
+func GetPost(id int) *Post {
 	var post Post
 	err := db.Model(&post).Column("post.*", "Categories").Where("id = ?", id).Select()
 	if err != nil {
 		log.Error(err)
 	}
-	return post
+	return &post
 }
 
-// UpdatePost use to create new post.
-func UpdatePost(id int, title string, content string) interface{} {
-	post := &Post{
-		ID:      id,
-		Title:   title,
-		Content: content,
-	}
+// UpdatePost use to update post.
+func UpdatePost(post *Post) *Post {
 	_, err := db.Model(post).Column("title").Column("content").Column("updated_at").Returning("*").Update()
 	if err != nil {
 		log.Error(err)
 	}
-	return GetPost(id)
+	return GetPost(post.ID)
 }
 
-// DeletePost use to create new post.
-func DeletePost(id int) interface{} {
+// DeletePost use to delete post.
+func DeletePost(id int) (int, error) {
 	err := db.Delete(&Post{
 		ID: id,
 	})
 	if err != nil {
-		log.Error(err)
+		return 0, err
 	}
-	return id
+	return id, nil
 }

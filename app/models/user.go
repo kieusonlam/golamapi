@@ -23,6 +23,12 @@ type (
 		Roles       []string `json:"roles,omitempty"`
 		Permissions []string `json:"permission,omitempty"`
 	}
+
+	// UserToken struct used to token creation request
+	UserToken struct {
+		Username string `json:"username"`
+		Password string `json:"password"`
+	}
 )
 
 // FindUserByEmail use to get single post.

@@ -1,12 +1,11 @@
 package controllers
 
 import (
-	"encoding/json"
-	"strconv"
-
 	"golamapi/app/models"
 
 	"aahframework.org/aah.v0"
+	"aahframework.org/essentials.v0"
+	"aahframework.org/log.v0"
 )
 
 // PostController is to demostrate the REST API endpoints for Post.
@@ -15,84 +14,83 @@ type PostController struct {
 }
 
 // CreatePost create new post in database and return data,
-func (a *PostController) CreatePost() {
-	var reqValues struct {
-		Title   string `json:"title"`
-		Content string `json:"content"`
-	}
-	if err := json.Unmarshal(a.Req.Payload, &reqValues); err != nil {
-		a.Reply().BadRequest().JSON(aah.Data{
-			"message": "bad request",
+func (p *PostController) CreatePost(post *models.Post) {
+	// Applying validation
+	// Validation is upcoming feature in aah framework
+	if ess.IsStrEmpty(post.Title) {
+		p.Reply().BadRequest().JSON(aah.Data{
+			"message": "post title is missing",
 		})
 		return
 	}
 
-	title := &reqValues.Title
-	content := &reqValues.Content
+	createdPost, err := models.CreatePost(post)
+	if err != nil {
+		log.Error(err)
+		p.Reply().InternalServerError().JSON(aah.Data{
+			"message": "error occurred while creating post",
+		})
+		return
+	}
 
-	post := models.CreatePost(*title, *content)
-
-	a.Reply().Ok().JSON(aah.Data{
-		"data": post,
+	p.Reply().Ok().JSON(aah.Data{
+		"data": createdPost,
 	})
 }
 
 // GetPosts get all post data
-func (a *PostController) GetPosts() {
+func (p *PostController) GetPosts() {
 	posts := models.GetPosts()
 
-	a.Reply().Ok().JSON(aah.Data{
+	p.Reply().Ok().JSON(aah.Data{
 		"data": posts,
 	})
 }
 
 // GetPost get single post
-func (a *PostController) GetPost() {
-	id, _ := strconv.Atoi(a.Req.PathValue("id"))
+func (p *PostController) GetPost(id int) {
 	post := models.GetPost(id)
 	if post.ID == 0 {
-		a.Reply().Ok().JSON(aah.Data{
+		p.Reply().NotFound().JSON(aah.Data{
 			"message": "Post is not found!",
 		})
 		return
 	}
-	a.Reply().NotFound().JSON(aah.Data{
+
+	p.Reply().Ok().JSON(aah.Data{
 		"data": post,
 	})
 }
 
 // UpdatePost update post in database and return data,
-func (a *PostController) UpdatePost() {
-	var reqValues struct {
-		Title   string `json:"title"`
-		Content string `json:"content"`
-	}
-	if err := json.Unmarshal(a.Req.Payload, &reqValues); err != nil {
-		a.Reply().BadRequest().JSON(aah.Data{
+func (p *PostController) UpdatePost(id int, post *models.Post) {
+	// Applying validation
+	// Validation is upcoming feature in aah framework
+	if id == 0 {
+		p.Reply().BadRequest().JSON(aah.Data{
 			"message": "bad request",
 		})
 		return
 	}
 
-	id, _ := strconv.Atoi(a.Req.PathValue("id"))
+	post.ID = id
+	updatedPost := models.UpdatePost(post)
 
-	title := &reqValues.Title
-	content := &reqValues.Content
-
-	post := models.UpdatePost(id, *title, *content)
-
-	a.Reply().Ok().JSON(aah.Data{
-		"data": post,
+	p.Reply().Ok().JSON(aah.Data{
+		"data": updatedPost,
 	})
 }
 
 // DeletePost create new post in database and return data,
-func (a *PostController) DeletePost() {
-	id, _ := strconv.Atoi(a.Req.PathValue("id"))
+func (p *PostController) DeletePost(id int) {
+	_, err := models.DeletePost(id)
+	if err != nil {
+		log.Error(err)
+		p.Reply().InternalServerError().JSON(aah.Data{
+			"message": "Error occurred while deleting post",
+		})
+		return
+	}
 
-	post := models.DeletePost(id)
-
-	a.Reply().Ok().JSON(aah.Data{
-		"data": post,
-	})
+	p.Reply().NoContent()
 }

@@ -9,17 +9,13 @@ type PostCategory struct {
 	CategoryID int `json:"category_id"`
 }
 
-// PostCatRelation add relation between post and category
-func PostCatRelation(postid int, catid int) *PostCategory {
-	postcat := &PostCategory{
-		PostID:     postid,
-		CategoryID: catid,
-	}
+// CreatePostCatRelation add relation between post and category
+func CreatePostCatRelation(postcat *PostCategory) (*PostCategory, error) {
 	err := db.Insert(postcat)
 	if err != nil {
-		log.Error(err)
+		return nil, err
 	}
-	return postcat
+	return postcat, nil
 }
 
 // GetPostCatRelations use to get all posts.
@@ -33,12 +29,12 @@ func GetPostCatRelations() []PostCategory {
 }
 
 // DelPostCatRel remove relation record
-func DelPostCatRel(id int) interface{} {
+func DelPostCatRel(id int) (int, error) {
 	err := db.Delete(&PostCategory{
 		ID: id,
 	})
 	if err != nil {
-		log.Error(err)
+		return 0, err
 	}
-	return id
+	return id, nil
 }
