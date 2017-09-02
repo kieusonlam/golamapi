@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	aah "aahframework.org/aah.v0"
+	"aahframework.org/aah.v0"
 	"github.com/go-pg/pg"
 )
 
@@ -50,8 +50,7 @@ func closeDb(_ *aah.Event) {
 func GetTx() *Transaction {
 	tx, err := db.Begin()
 	if err != nil {
-		panic(err)
-		return nil
+		panic(err) // if you're using panic here, return nil is unreachable code
 	}
 	return &Transaction{Transaction: tx}
 }

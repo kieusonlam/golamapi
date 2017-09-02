@@ -1,12 +1,11 @@
 package controllers
 
 import (
-	"encoding/json"
-	"strconv"
-
 	"golamapi/app/models"
 
 	"aahframework.org/aah.v0"
+	"aahframework.org/essentials.v0"
+	"aahframework.org/log.v0"
 )
 
 // CategoryController is to demostrate the REST API endpoints for Post.
@@ -15,84 +14,81 @@ type CategoryController struct {
 }
 
 // CreateCategory create new category in database and return data,
-func (a *CategoryController) CreateCategory() {
-	var reqValues struct {
-		Name        string `json:"name"`
-		Description string `json:"description"`
-	}
-	if err := json.Unmarshal(a.Req.Payload, &reqValues); err != nil {
-		a.Reply().BadRequest().JSON(aah.Data{
-			"message": "bad request",
+func (c *CategoryController) CreateCategory(category *models.Category) {
+	// Applying validation
+	// Validation is upcoming feature in aah framework
+	if ess.IsStrEmpty(category.Name) {
+		c.Reply().BadRequest().JSON(aah.Data{
+			"message": "Category name is missing",
 		})
 		return
 	}
 
-	name := &reqValues.Name
-	description := &reqValues.Description
+	cat, err := models.CreateCategory(category)
+	if err != nil {
+		log.Error(err)
+		c.Reply().InternalServerError().JSON(aah.Data{
+			"message": "Error occurred while creating category",
+		})
+		return
+	}
 
-	cat := models.CreateCategory(*name, *description)
-
-	a.Reply().Ok().JSON(aah.Data{
+	c.Reply().Ok().JSON(aah.Data{
 		"data": cat,
 	})
 }
 
 // GetCategories get all category data
-func (a *CategoryController) GetCategories() {
+func (c *CategoryController) GetCategories() {
 	cats := models.GetCategories()
 
-	a.Reply().Ok().JSON(aah.Data{
+	c.Reply().Ok().JSON(aah.Data{
 		"data": cats,
 	})
 }
 
 // GetCategory get single post
-func (a *CategoryController) GetCategory() {
-	id, _ := strconv.Atoi(a.Req.PathValue("id"))
+func (c *CategoryController) GetCategory(id int) {
 	cat := models.GetCategory(id)
 	if cat.ID == 0 {
-		a.Reply().Ok().JSON(aah.Data{
+		c.Reply().NotFound().JSON(aah.Data{
 			"message": "Category is not found!",
 		})
 		return
 	}
-	a.Reply().NotFound().JSON(aah.Data{
+
+	c.Reply().Ok().JSON(aah.Data{
 		"data": cat,
 	})
 }
 
 // UpdateCategory update category in database and return data,
-func (a *CategoryController) UpdateCategory() {
-	var reqValues struct {
-		Title   string `json:"title"`
-		Content string `json:"content"`
-	}
-	if err := json.Unmarshal(a.Req.Payload, &reqValues); err != nil {
-		a.Reply().BadRequest().JSON(aah.Data{
-			"message": "bad request",
+func (c *CategoryController) UpdateCategory(id int, category *models.Category) {
+	category.ID = id
+	cat, err := models.UpdateCategory(category)
+	if err != nil {
+		log.Error(err)
+		c.Reply().InternalServerError().JSON(aah.Data{
+			"message": "Error occurred while updating category",
 		})
 		return
 	}
 
-	id, _ := strconv.Atoi(a.Req.PathValue("id"))
-
-	title := &reqValues.Title
-	content := &reqValues.Content
-
-	post := models.UpdateCategory(id, *title, *content)
-
-	a.Reply().Ok().JSON(aah.Data{
-		"data": post,
+	c.Reply().Ok().JSON(aah.Data{
+		"data": cat,
 	})
 }
 
 // DeleteCategory create new post in database and return data,
-func (a *CategoryController) DeleteCategory() {
-	id, _ := strconv.Atoi(a.Req.PathValue("id"))
+func (c *CategoryController) DeleteCategory(id int) {
+	_, err := models.DeleteCategory(id)
+	if err != nil {
+		log.Error(err)
+		c.Reply().InternalServerError().JSON(aah.Data{
+			"message": "Error occurred while deleting category",
+		})
+		return
+	}
 
-	post := models.DeleteCategory(id)
-
-	a.Reply().Ok().JSON(aah.Data{
-		"data": post,
-	})
+	c.Reply().NoContent()
 }

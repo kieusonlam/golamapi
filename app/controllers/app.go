@@ -1,17 +1,13 @@
-// Copyright (c) Jeevanandam M. (https://github.com/jeevatkm)
-// go-aah/tutorials source code and usage is governed by a MIT style
-// license that can be found in the LICENSE file.
-
 package controllers
 
 import (
-	"encoding/json"
 	"time"
 
 	"golamapi/app/models"
 	"golamapi/app/security"
 
 	"aahframework.org/aah.v0"
+	"aahframework.org/essentials.v0"
 	"aahframework.org/log.v0"
 	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"
@@ -31,29 +27,16 @@ func (a *AppController) Index() {
 
 // Token method validates the given username and password the generates the
 // JWT token.
-func (a *AppController) Token() {
-	// In upcoming release auto binding feature is coming :)
-	// username := a.Req.FormValue("username")
-	// password := a.Req.FormValue("password")
-
-	// If you want JSON payload instead of form-data submission
-	// uncomment below lines and comment above two lines
-	var reqValues struct {
-		Username string `json:"username"`
-		Password string `json:"password"`
-	}
-	if err := json.Unmarshal(a.Req.Payload, &reqValues); err != nil {
+func (a *AppController) Token(tokenReq *models.UserToken) {
+	if ess.IsStrEmpty(tokenReq.Username) || ess.IsStrEmpty(tokenReq.Password) {
 		a.Reply().BadRequest().JSON(aah.Data{
 			"message": "bad request",
 		})
 		return
 	}
 
-	username := reqValues.Username
-	password := reqValues.Password
-
 	// get the user details by username
-	user := models.FindUserByEmail(username)
+	user := models.FindUserByEmail(tokenReq.Username)
 	if user.ID == 0 || user.IsExpried || user.IsLocked {
 		a.Reply().Unauthorized().JSON(aah.Data{
 			"message": "invalid credentials",
@@ -62,7 +45,7 @@ func (a *AppController) Token() {
 	}
 
 	// validate password
-	if err := bcrypt.CompareHashAndPassword(user.Password, []byte(password)); err != nil {
+	if err := bcrypt.CompareHashAndPassword(user.Password, []byte(tokenReq.Password)); err != nil {
 		a.Reply().Unauthorized().JSON(aah.Data{
 			"message": "invalid credentials",
 		})
