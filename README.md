@@ -1,4 +1,5 @@
 # golamapi
-This project use:
-- aah Framwork
+This REST API project use:
+- aah Framework
 - go-pg
+- JWT Auth
