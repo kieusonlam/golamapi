@@ -19,7 +19,7 @@ func CreateCategory(cat *Category) (*Category, error) {
 // GetCategories use to get all posts.
 func GetCategories() []Category {
 	var categories []Category
-	err := db.Model(&categories).Column("category.*", "Posts").Select()
+	err := db.Model(&categories).Column("category.*", "Posts").Order("id ASC").Select()
 	if err != nil {
 		log.Error(err)
 	}

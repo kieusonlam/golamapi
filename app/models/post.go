@@ -43,7 +43,7 @@ func CreatePost(post *Post) (*Post, error) {
 // GetPosts use to get all posts.
 func GetPosts() []Post {
 	var posts []Post
-	err := db.Model(&posts).Column("post.*", "Categories").Select()
+	err := db.Model(&posts).Column("post.*", "Categories").Order("id ASC").Select()
 	if err != nil {
 		log.Error(err)
 	}
