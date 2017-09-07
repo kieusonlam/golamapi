@@ -2,7 +2,7 @@ package models
 
 import "aahframework.org/log.v0"
 
-// Category hold post category details
+// Category hold category details
 type Category struct {
 	ID          int    `json:"id"`
 	Name        string `json:"name"`
@@ -10,13 +10,13 @@ type Category struct {
 	Posts       []Post `json:"posts" pg:"many2many:post_categories"`
 }
 
-// CreateCategory use to create new post.
+// CreateCategory use to create new category
 func CreateCategory(cat *Category) (*Category, error) {
 	err := db.Insert(cat)
 	return cat, err
 }
 
-// GetCategories use to get all posts.
+// GetCategories use to get all categories
 func GetCategories() []Category {
 	var categories []Category
 	err := db.Model(&categories).Column("category.*", "Posts").Order("id ASC").Select()
@@ -26,7 +26,7 @@ func GetCategories() []Category {
 	return categories
 }
 
-// GetCategory use to get single post.
+// GetCategory use to get single category
 func GetCategory(id int) *Category {
 	var cat Category
 	err := db.Model(&cat).Column("category.*", "Posts").Where("id = ?", id).Select()
@@ -36,7 +36,7 @@ func GetCategory(id int) *Category {
 	return &cat
 }
 
-// UpdateCategory use to create new post.
+// UpdateCategory use to create new category
 func UpdateCategory(cat *Category) (*Category, error) {
 	err := db.Update(cat)
 	if err != nil {
@@ -45,7 +45,7 @@ func UpdateCategory(cat *Category) (*Category, error) {
 	return GetCategory(cat.ID), nil
 }
 
-// DeleteCategory use to create new post.
+// DeleteCategory use to delete category
 func DeleteCategory(id int) (int, error) {
 	err := db.Delete(&Category{
 		ID: id,

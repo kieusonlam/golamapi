@@ -23,7 +23,7 @@ func (u *UserController) CreateTestUsers() {
 	})
 }
 
-// CreateUser create new User
+// CreateUser create new user
 func (u *UserController) CreateUser(user *models.NewUser) {
 	// Applying validation
 	// Validation is upcoming feature in aah framework

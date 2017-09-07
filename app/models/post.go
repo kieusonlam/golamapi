@@ -28,19 +28,19 @@ func (b *Post) BeforeInsert(db orm.DB) error {
 	return nil
 }
 
-// BeforeUpdate add current time to create_at
+// BeforeUpdate add current time to update_at
 func (b *Post) BeforeUpdate(db orm.DB) error {
 	b.UpdatedAt = time.Now()
 	return nil
 }
 
-// CreatePost use to create new post.
+// CreatePost use to create new post
 func CreatePost(post *Post) (*Post, error) {
 	err := db.Insert(post)
 	return post, err
 }
 
-// GetPosts use to get all posts.
+// GetPosts use to get all posts
 func GetPosts() []Post {
 	var posts []Post
 	err := db.Model(&posts).Column("post.*", "Categories").Order("id ASC").Select()
@@ -50,7 +50,7 @@ func GetPosts() []Post {
 	return posts
 }
 
-// GetPost use to get single post.
+// GetPost use to get single post
 func GetPost(id int) *Post {
 	var post Post
 	err := db.Model(&post).Column("post.*", "Categories").Where("id = ?", id).Select()
@@ -60,7 +60,7 @@ func GetPost(id int) *Post {
 	return &post
 }
 
-// UpdatePost use to update post.
+// UpdatePost use to update post
 func UpdatePost(post *Post) *Post {
 	_, err := db.Model(post).Column("title").Column("content").Column("updated_at").Returning("*").Update()
 	if err != nil {
@@ -69,7 +69,7 @@ func UpdatePost(post *Post) *Post {
 	return GetPost(post.ID)
 }
 
-// DeletePost use to delete post.
+// DeletePost use to delete post
 func DeletePost(id int) (int, error) {
 	err := db.Delete(&Post{
 		ID: id,

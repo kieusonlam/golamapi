@@ -8,12 +8,12 @@ import (
 	"aahframework.org/log.v0"
 )
 
-// CategoryController is to demostrate the REST API endpoints for Post.
+// CategoryController is to demostrate the REST API endpoints for Category
 type CategoryController struct {
 	AppController
 }
 
-// CreateCategory create new category in database and return data,
+// CreateCategory create new category in database and return data
 func (c *CategoryController) CreateCategory(category *models.Category) {
 	// Applying validation
 	// Validation is upcoming feature in aah framework
@@ -38,7 +38,7 @@ func (c *CategoryController) CreateCategory(category *models.Category) {
 	})
 }
 
-// GetCategories get all category data
+// GetCategories get all categories data
 func (c *CategoryController) GetCategories() {
 	cats := models.GetCategories()
 
@@ -47,7 +47,7 @@ func (c *CategoryController) GetCategories() {
 	})
 }
 
-// GetCategory get single post
+// GetCategory get single category
 func (c *CategoryController) GetCategory(id int) {
 	cat := models.GetCategory(id)
 	if cat.ID == 0 {
@@ -62,7 +62,7 @@ func (c *CategoryController) GetCategory(id int) {
 	})
 }
 
-// UpdateCategory update category in database and return data,
+// UpdateCategory update category in database and return data
 func (c *CategoryController) UpdateCategory(id int, category *models.Category) {
 	category.ID = id
 	cat, err := models.UpdateCategory(category)
@@ -79,7 +79,7 @@ func (c *CategoryController) UpdateCategory(id int, category *models.Category) {
 	})
 }
 
-// DeleteCategory create new post in database and return data,
+// DeleteCategory delete category by id
 func (c *CategoryController) DeleteCategory(id int) {
 	_, err := models.DeleteCategory(id)
 	if err != nil {

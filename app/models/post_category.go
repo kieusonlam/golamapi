@@ -2,7 +2,7 @@ package models
 
 import "aahframework.org/log.v0"
 
-// PostCategory Post Category relation
+// PostCategory handle Post and Category relation
 type PostCategory struct {
 	ID         int `json:"id"`
 	PostID     int `json:"post_id"`
@@ -26,7 +26,7 @@ func CreatePostCatRelation(postcat *PostCategory) (*PostCategory, error) {
 	return postcat, nil
 }
 
-// GetPostCatRelations use to get all posts.
+// GetPostCatRelations use to get all post category relation
 func GetPostCatRelations() []PostCategory {
 	var postcatrels []PostCategory
 	err := db.Model(&postcatrels).Select()
