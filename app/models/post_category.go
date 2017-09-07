@@ -19,6 +19,7 @@ func CreatePostCatRelation(postcat *PostCategory) (*PostCategory, error) {
 		OnConflict("DO NOTHING").
 		Returning("id").
 		SelectOrInsert()
+	log.Info(create)
 	if err != nil {
 		return nil, err
 	}
