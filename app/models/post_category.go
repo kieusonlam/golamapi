@@ -11,7 +11,14 @@ type PostCategory struct {
 
 // CreatePostCatRelation add relation between post and category
 func CreatePostCatRelation(postcat *PostCategory) (*PostCategory, error) {
-	err := db.Insert(postcat)
+	// err := db.Insert(postcat)
+	create, err := db.Model(postcat).
+		Column("id").
+		Where("post_id = ?post_id").
+		Where("category_id = ?category_id").
+		OnConflict("DO NOTHING").
+		Returning("id").
+		SelectOrInsert()
 	if err != nil {
 		return nil, err
 	}
