@@ -31,7 +31,7 @@ type (
 	}
 )
 
-// FindUserByEmail use to get single post.
+// FindUserByEmail find user by email
 func FindUserByEmail(email string) User {
 	var user User
 	err := db.Model(&user).Where("email = ?", email).Select()
@@ -41,7 +41,23 @@ func FindUserByEmail(email string) User {
 	return user
 }
 
-// CreateTestUsers use to create new post.
+// CreateUser usee to create new user
+func CreateUser(user *User) (*User, error) {
+	err := db.Insert(user)
+	return user, err
+}
+
+// GetUsers use to get all posts.
+func GetUsers() []User {
+	var users []User
+	err := db.Model(&users).Order("id ASC").Select()
+	if err != nil {
+		log.Error(err)
+	}
+	return users
+}
+
+// CreateTestUsers use to create test users
 func CreateTestUsers() []User {
 	users := []User{{
 		FirstName:   "East",
