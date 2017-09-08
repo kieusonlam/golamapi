@@ -4,7 +4,10 @@
 
 package models
 
-import "aahframework.org/log.v0"
+import (
+	"aahframework.org/log.v0"
+	"golang.org/x/crypto/bcrypt"
+)
 
 // This is for demo purpose, set of users
 // Typically you will be using Database, API calls, LDAP, etc to get the Authentication
@@ -17,7 +20,19 @@ type (
 		FirstName   string   `json:"first_name"`
 		LastName    string   `json:"last_name"`
 		Email       string   `json:"email"`
-		Password    []byte   `json:"-"`
+		Password    []byte   `json:"password"`
+		IsLocked    bool     `json:"is_locked"`
+		IsExpried   bool     `json:"is_expried"`
+		Roles       []string `json:"roles,omitempty"`
+		Permissions []string `json:"permission,omitempty"`
+	}
+
+	// NewUser struct used to create new user
+	NewUser struct {
+		FirstName   string   `json:"first_name"`
+		LastName    string   `json:"last_name"`
+		Email       string   `json:"email"`
+		Password    string   `json:"password"`
 		IsLocked    bool     `json:"is_locked"`
 		IsExpried   bool     `json:"is_expried"`
 		Roles       []string `json:"roles,omitempty"`
@@ -42,8 +57,22 @@ func FindUserByEmail(email string) User {
 }
 
 // CreateUser usee to create new user
-func CreateUser(user *User) (*User, error) {
-	err := db.Insert(user)
+func CreateUser(newuser *NewUser) (*User, error) {
+	hashPassword, err := bcrypt.GenerateFromPassword([]byte(newuser.Password), bcrypt.DefaultCost)
+	if err != nil {
+		log.Error(err)
+	}
+	user := &User{
+		FirstName: 		newuser.FirstName,
+		LastName: 		newuser.LastName,
+		Email: 			newuser.Email,
+		Password: 		hashPassword,
+		IsLocked: 		newuser.IsLocked,
+		IsExpried: 		newuser.IsExpried,
+		Roles: 			newuser.Roles,
+		Permissions: 	newuser.Permissions,
+	}
+	err = db.Insert(user)
 	return user, err
 }
 

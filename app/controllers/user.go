@@ -6,7 +6,6 @@ import (
 	"aahframework.org/aah.v0"
 	"aahframework.org/essentials.v0"
 	"aahframework.org/log.v0"
-	"golang.org/x/crypto/bcrypt"
 )
 
 // UserController is to demostrate the REST API endpoints for User
@@ -24,17 +23,17 @@ func (u *UserController) CreateTestUsers() {
 }
 
 // CreateUser create new user
-func (u *UserController) CreateUser(user *models.User) {
+func (u *UserController) CreateUser(newuser *models.NewUser) {
 	// Applying validation
 	// Validation is upcoming feature in aah framework
-	if ess.IsStrEmpty(user.Email) {
+	if ess.IsStrEmpty(newuser.Email) {
 		u.Reply().BadRequest().JSON(aah.Data{
 			"message": "User email is missing",
 		})
 		return
 	}
 
-	existedUser := models.FindUserByEmail(user.Email)
+	existedUser := models.FindUserByEmail(newuser.Email)
 	if existedUser.ID != 0 {
 		u.Reply().BadRequest().JSON(aah.Data{
 			"message": "This email adready exists!",
@@ -42,13 +41,7 @@ func (u *UserController) CreateUser(user *models.User) {
 		return
 	}
 
-	hashPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
-	if err != nil {
-		log.Error(err)
-	}
-	user.Password = []byte(hashPassword)
-
-	createdUser, err := models.CreateUser(user)
+	createdUser, err := models.CreateUser(newuser)
 	if err != nil {
 		log.Error(err)
 		u.Reply().InternalServerError().JSON(aah.Data{
