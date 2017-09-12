@@ -79,3 +79,34 @@ func (u *UserController) GetUser(email string) {
 		"data": user,
 	})
 }
+
+// UpdateUser update user in database and return data
+func (u *UserController) UpdateUser(email string, user *models.User) {
+	if email == "" {
+		u.Reply().BadRequest().JSON(aah.Data{
+			"message": "bad request",
+		})
+		return
+	}
+
+	user.Email = email
+	updatedUser := models.UpdateUser(user)
+
+	u.Reply().Ok().JSON(aah.Data{
+		"data": updatedUser,
+	})
+}
+
+// DeleteUser delete user by email
+func (u *UserController) DeleteUser(email string) {
+	_, err := models.DeleteUser(email)
+	if err != nil {
+		log.Error(err)
+		u.Reply().InternalServerError().JSON(aah.Data{
+			"message": "Error occurred while deleting post",
+		})
+		return
+	}
+
+	u.Reply().NoContent()
+}
